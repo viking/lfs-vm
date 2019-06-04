@@ -1,0 +1,6 @@
+This project is an attempt to automate the creation of a Linux-From-Scratch
+(LFS) version 8.4 VM by using Vagrant.
+
+Resources:
+
+http://www.linuxfromscratch.org
