@@ -84,6 +84,8 @@ Vagrant.configure("2") do |config|
   # SHELL
 
   config.vm.provision "setup", type: "shell", inline: <<-SHELL
+    export LFS=/mnt/lfs
+
     # install needed host packages
     apt-get update
     apt-get install -y parted build-essential gawk bison
@@ -121,14 +123,17 @@ Vagrant.configure("2") do |config|
     chown lfs:lfs ~lfs/.bash_profile ~lfs/.bashrc
   SHELL
 
-  config.vm.provision "build", type: "shell", inline: <<-SHELL
+  config.vm.provision "mount", type: "shell", inline: <<-SHELL
     # mount filesystems
-    export LFS=/mnt/lfs
     mkdir -p /mnt/lfs
     mount /dev/sdb4 /mnt/lfs
     mkdir -p /mnt/lfs/boot
     mount /dev/sdb2 /mnt/lfs/boot
     swapon /dev/sdb3
+  SHELL
+
+  config.vm.provision "download", type: "shell", inline: <<-SHELL
+    export LFS=/mnt/lfs
 
     # download packages
     mkdir -p $LFS/sources
@@ -138,12 +143,18 @@ Vagrant.configure("2") do |config|
     md5sum -c /vagrant/lfs-8.4-md5sums.txt
     if [ $? -ne 0 ]; then echo "MD5 checksums didn't match"; exit 1; fi
     popd
+  SHELL
+
+  config.vm.provision "build_tools", type: "shell", inline: <<-SHELL
+    export LFS=/mnt/lfs
 
     # setup tools
     mkdir -p $LFS/tools
     ln -sf $LFS/tools /
 
-    # build system
-    #exec su -c "env -i HOME=/home/lfs TERM=$TERM /vagrant/lfs_build.sh" lfs
+    # build tools
+    su -c "env -i HOME=/home/lfs TERM=$TERM /vagrant/lfs_build.sh" lfs
+
+    chown -R root:root $LFS/tools
   SHELL
 end

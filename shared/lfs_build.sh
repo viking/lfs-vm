@@ -272,3 +272,210 @@ ln -s libncursesw.so /tools/lib/libncurses.so
 popd
 rm -fr ncurses-6.1
 echo "Finished building ncurses."
+
+echo "Building bash..."
+tar -xf bash-5.0.tar.gz
+pushd bash-5.0
+./configure --prefix=/tools --without-bash-malloc
+make
+make install
+ln -s bash /tools/bin/sh
+popd
+rm -fr bash-5.0
+echo "Finished building bash."
+
+echo "Building bison..."
+tar -xf bison-3.3.2.tar.xz
+pushd bison-3.3.2
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr bison-3.3.2
+echo "Finished building bison."
+
+echo "Building bzip2..."
+tar -xf bzip2-1.0.6.tar.gz
+pushd bzip2-1.0.6
+make
+make PREFIX=/tools install
+popd
+rm -fr bzip2-1.0.6
+echo "Finished building bzip2."
+
+echo "Building coreutils..."
+tar -xf coreutils-8.30.tar.xz
+pushd coreutils-8.30
+./configure --prefix=/tools --enable-install-program=hostname
+make
+make install
+popd
+rm -fr coreutils-8.30
+echo "Finished building coreutils."
+
+echo "Building diffutils..."
+tar -xf diffutils-3.7.tar.xz
+pushd diffutils-3.7
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr diffutil-3.7
+echo "Finished building diffutil."
+
+echo "Building file..."
+tar -xf file-5.36.tar.gz
+pushd file-5.36
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr file-5.36
+echo "Finished building file."
+
+echo "Building findutils..."
+tar -xf findutils-4.6.0.tar.gz
+pushd findutils-4.6.0
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
+sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
+echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr findutils-4.6.0
+echo "Finished building findutils."
+
+echo "Building gawk..."
+tar -xf gawk-4.2.1.tar.xz
+pushd gawk-4.2.1
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr gawk-4.2.1
+echo "Finished building gawk."
+
+echo "Building gettext..."
+tar -xf gettext-0.19.8.1.tar.xz
+pushd gettext-0.19.8.1
+cd gettext-tools
+EMACS="no" ./configure --prefix=/tools --disable-shared
+make -C gnulib-lib
+make -C intl pluralx.c
+make -C src msgfmt
+make -C src msgmerge
+make -C src xgettext
+cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin
+popd
+rm -fr gettext-0.19.8.1
+echo "Finished building gettext."
+
+echo "Building grep..."
+tar -xf grep-3.3.tar.xz
+pushd grep-3.3
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr grep-3.3
+echo "Finished building grep."
+
+echo "Building gzip..."
+tar -xf gzip-1.10.tar.xz
+pushd gzip-1.10
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr gzip-1.10
+echo "Finished building gzip."
+
+echo "Building make..."
+tar -xf make-4.2.1.tar.bz2
+pushd make-4.2.1
+sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
+./configure --prefix=/tools --without-guile
+make
+make install
+popd
+rm -fr make-4.2.1
+echo "Finished building make."
+
+echo "Building patch..."
+tar -xf patch-2.7.6.tar.xz
+pushd patch-2.7.6
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr patch-2.7.6
+echo "Finished building patch-2.7.6"
+
+echo "Building perl..."
+tar -xf perl-5.28.1.tar.xz
+pushd perl-5.28.1
+sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
+make
+cp -v perl cpan/podlators/scripts/pod2man /tools/bin
+mkdir -pv /tools/lib/perl5/5.28.1
+cp -Rv lib/* /tools/lib/perl5/5.28.1
+popd
+rm -fr perl-5.28.1
+echo "Finished building perl-5.28.1"
+
+echo "Building Python..."
+tar -xf Python-3.7.2.tar.xz
+pushd Python-3.7.2
+sed -i '/def add_multiarch_paths/a \        return' setup.py
+./configure --prefix=/tools --without-ensurepip
+make
+make install
+popd
+rm -fr Python-3.7.2
+echo "Finished building Python-3.7.2"
+
+echo "Building sed..."
+tar -xf sed-4.7.tar.xz
+pushd sed-4.7
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr sed-4.7
+echo "Finished building sed-4.7"
+
+echo "Building tar..."
+tar -xf tar-1.31.tar.xz
+pushd tar-1.31
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr tar-1.31
+echo "Finished building tar-1.31"
+
+echo "Building texinfo..."
+tar -xf texinfo-6.5.tar.xz
+pushd texinfo-6.5
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr texinfo-6.5
+echo "Finished building texinfo-6.5"
+
+echo "Building xz..."
+tar -xf xz-5.2.4.tar.xz
+pushd xz-5.2.4
+./configure --prefix=/tools
+make
+make install
+popd
+rm -fr xz-5.2.4
+echo "Finished building xz-5.2.4"
+
+strip --strip-debug /tools/lib/*
+/usr/bin/strip --strip-unneeded /tools/{,s}bin/*
+rm -rf /tools/{,share}/{info,man,doc}
+find /tools/{lib,libexec} -name \*.la -delete
