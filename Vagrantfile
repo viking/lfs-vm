@@ -153,7 +153,7 @@ Vagrant.configure("2") do |config|
     ln -sf $LFS/tools /
 
     # build tools
-    su -c "env -i HOME=/home/lfs TERM=$TERM /vagrant/lfs_build.sh" lfs
+    su -c "env -i HOME=/home/lfs TERM=$TERM /vagrant/lfs_build_tools.sh" lfs
 
     chown -R root:root $LFS/tools
   SHELL
